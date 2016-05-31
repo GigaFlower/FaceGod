@@ -14,8 +14,10 @@ def upload(request):
     if request.method == "POST":
         json_dict = _check_json(request.body.decode())
         if json_dict:
-            _handle_upload(json_dict)
-            return HttpResponse("upload success!")
+            if _handle_upload(json_dict):
+                return HttpResponse("upload success!")
+            else:
+                return HttpResponse("Decode img fails!")
         else:
             return HttpResponse("Invalid data.All 'name', 'score', 'filename', 'photo' are required in json")
     return HttpResponse("Use POST please!")
@@ -80,10 +82,13 @@ def _handle_upload(json_dict):
             cnt += 1
             name = '.'.join(name.split('.')[:-1]) + '-%d.' % cnt + name.split('.')[-1]
 
-    photo = Photo(name=json_dict['name'], score=int(json_dict['score']), file_name=name)
-    photo.save()
-
-    img = open(os.path.join("photo", name), 'wb')
-    print(json_dict['photo'])
-    img.write(json_dict['photo'])
-    img.close()
+    try:
+        img = open(os.path.join("photo", name), 'wb')
+        img.write(json_dict['photo'])
+        img.close()
+    except:
+        return False
+    else:
+        photo = Photo(name=json_dict['name'], score=int(json_dict['score']), file_name=name)
+        photo.save()
+        return True
