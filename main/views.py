@@ -3,7 +3,6 @@ from django.core.exceptions import *
 from .models import Photo
 
 import json
-import base64
 import os, os.path
 
 
@@ -84,5 +83,5 @@ def _handle_upload(json_dict):
     photo.save()
 
     img = open(os.path.join("photo", name), 'wb')
-    img.write(base64.b64decode(json_dict['photo']))
+    img.write(json_dict['photo'])
     img.close()
