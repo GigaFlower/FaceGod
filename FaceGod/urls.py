@@ -16,6 +16,12 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from main import views
+
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^upload', views.upload),
+    url(r'^get/ranking', views.get_ranking),
+    url(r'^get/photo/(.+)', views.get_photo),
+    url(r'^admin/', admin   .site.urls),
+    url(r'', views.hello),
 ]
