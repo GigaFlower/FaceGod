@@ -23,4 +23,4 @@ class Photo(models.Model):
         return self.score == other.score
 
     def serialize(self):
-        return dict(name=self.name, score=self.score, filename=self.file_name)
+        return dict(id=self.id, name=self.name, score=self.score, filename=self.file_name)

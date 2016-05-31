@@ -22,6 +22,8 @@ urlpatterns = [
     url(r'^upload', views.upload),
     url(r'^get/ranking', views.get_ranking),
     url(r'^get/photo/(.+)', views.get_photo),
+    url(r'^delete/([0-9]+)', views.delete),
+    url(r'^delete', views.delete_all),
     url(r'^admin/', admin   .site.urls),
     url(r'', views.hello),
 ]
