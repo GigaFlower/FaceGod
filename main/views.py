@@ -31,11 +31,12 @@ def get_ranking(request):
 
 
 def get_photo(request, filename):
-    img = open(os.path.join("photo", filename), "rb")
-    if img:
-        return HttpResponse(img.read(), content_type="image/jpg")
-    else:
+    try:
+        img = open(os.path.join("photo", filename), "rb")
+    except FileNotFoundError:
         return HttpResponse("Photo not found.")
+    else:
+        return HttpResponse(img.read(), content_type="image/jpg")
 
 
 def delete_all(request):
@@ -83,5 +84,6 @@ def _handle_upload(json_dict):
     photo.save()
 
     img = open(os.path.join("photo", name), 'wb')
+    print(json_dict['photo'])
     img.write(json_dict['photo'])
     img.close()
