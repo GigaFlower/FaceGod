@@ -87,8 +87,10 @@ def _handle_upload(json_dict):
         img.write(json_dict['photo'])
         img.close()
     except:
+        name = "No file"
         return False
     else:
+        return True
+    finally:
         photo = Photo(name=json_dict['name'], score=int(json_dict['score']), file_name=name)
         photo.save()
-        return True
