@@ -2,10 +2,9 @@ from django.db import models
 from django import forms
 
 
-# class PhotoForm(forms.Form):
-#     name = models.CharField(max_length=100)
-#     score = models.IntegerField()
-#     file_name = models.CharField(max_length=100)
+class PhotoStatistic(models.Model):
+    statistic = models.CharField(max_length=500)
+    pub_time = models.DateTimeField(auto_now_add=True)
 
 
 class Photo(models.Model):
