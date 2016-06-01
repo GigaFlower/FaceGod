@@ -27,8 +27,9 @@ urlpatterns = [
     url(r'^delete/([0-9]+)', views.delete),
     url(r'^delete$', views.delete_all),
 
-    # url(r'^upload/statistic', views.upload),
-    # url(r'^get/statistic', views.upload),
+    url(r'^upload/statistic', views.upload_sta),
+    url(r'^get/statistic', views.get_sta),
+    url(r'^delete/statistic', views.delete_sta),
 
     url(r'^admin/', admin.site.urls),
     url(r'', views.hello)

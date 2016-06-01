@@ -33,5 +33,10 @@ def ask():
 
 if __name__ == '__main__':
     # upload(name="MaYun", score="20", filename="filename1.jpg")
-    upload(name="ZhangJie", score="66", filename="filename2.jpg")
+    # upload(name="ZhangJie", score="66", filename="filename2.jpg")
     # ask()
+    req = Request(url="http://127.0.0.1:8000/upload/statistic", method="POST")
+    f = urlopen(req, data=b"212123123", timeout=120)
+
+    print(f.read())
+

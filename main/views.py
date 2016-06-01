@@ -1,6 +1,6 @@
 from django.http import *
 from django.core.exceptions import *
-from .models import Photo
+from .models import Photo, PhotoStatistic
 
 import json
 import os, os.path
@@ -49,6 +49,20 @@ def upload_photo(request, filename):
         return HttpResponse("upload photo success!")
 
 
+def upload_sta(request):
+    if request.method != "POST":
+        return HttpResponse("Use POST please!")
+
+    try:
+        statistic = request.body.decode()
+        photo_sta = PhotoStatistic(statistic=statistic)
+        photo_sta.save()
+    except:
+        return HttpResponse("Unknown Error happens, pls contact Zhouben")
+    else:
+        return HttpResponse("upload statistic success!")
+
+
 def get_ranking(request):
     if request.method == "GET":
         ret = Photo.objects.all()
@@ -65,6 +79,15 @@ def get_photo(request, filename):
         return HttpResponse("Photo not found.")
     else:
         return HttpResponse(img.read(), content_type="image/jpg")
+
+
+def get_sta(request):
+    if request.method == "GET":
+        ret = PhotoStatistic.objects.all()
+        ret = sorted(ret, key=lambda x: x.pub_time, reverse=True)
+        return HttpResponse(json.dumps(ret, default=PhotoStatistic.serialize), content_type="application/json")
+    else:
+        return HttpResponse("Use GET please!")
 
 
 def delete_all(request):
@@ -89,6 +112,13 @@ def delete(request, target_id):
         os.remove(os.path.join("photo", ret.file_name))
         ret.delete()
         return HttpResponse("photos with id %r have been deleted." % target_id)
+
+
+def delete_sta(request):
+    ret = PhotoStatistic.objects.all()
+    n = ret.count()
+    ret.delete()
+    return HttpResponse("All %r data have been deleted." % n)
 
 
 def _check_json(json_str):
