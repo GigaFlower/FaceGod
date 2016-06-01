@@ -12,7 +12,7 @@ def upload(**kwargs):
     # json data
     data = json.dumps(kwargs)
     data = data.encode()
-    data = data[:-1] + b', "photo": "' + bs_f + b'"}'
+    # data = data[:-1] + b', "photo": "' + bs_f + b'"}'
 
     # post
     url = "http://127.0.0.1:8000/upload"

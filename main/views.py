@@ -6,21 +6,47 @@ import json
 import os, os.path
 
 
+class InvalidJsonError(Exception):
+    pass
+
+
+class DuplicatedPhotoNameError(Exception):
+    pass
+
+
+class StoreImgError(Exception):
+    pass
+
+
 def hello(request):
     return HttpResponse("Hello world!")
 
 
 def upload(request):
-    if request.method == "POST":
+    if request.method != "POST":
+        return HttpResponse("Use POST please!")
+
+    try:
         json_dict = _check_json(request.body.decode())
-        if json_dict:
-            if _handle_upload(json_dict):
-                return HttpResponse("upload success!")
-            else:
-                return HttpResponse("Decode img fails!")
-        else:
-            return HttpResponse("Invalid data.All 'name', 'score', 'filename', 'photo' are required in json")
-    return HttpResponse("Use POST please!")
+        _handle_upload(json_dict)
+    except InvalidJsonError as e:
+        return HttpResponse(str(e))
+    except DuplicatedPhotoNameError as e:
+        return HttpResponse(str(e))
+    else:
+        return HttpResponse("upload success!")
+
+
+def upload_photo(request, filename):
+    if request.method != "POST":
+        return HttpResponse("Use POST please!")
+
+    try:
+        _handle_upload_photo(filename, request.body)
+    except DuplicatedPhotoNameError as e:
+        return HttpResponse(str(e))
+    else:
+        return HttpResponse("upload photo success!")
 
 
 def get_ranking(request):
@@ -67,30 +93,37 @@ def delete(request, target_id):
 
 def _check_json(json_str):
     ret = json.loads(json_str)
-    if all(ret.get(key, None) for key in ['name', 'score', 'filename', 'photo']):
+    if all(ret.get(key, None) for key in ['name', 'score', 'filename']):
         return ret
     else:
-        return {}
+        raise InvalidJsonError("Invalid data.All 'name', 'score', 'filename' are required in json")
 
 
 def _handle_upload(json_dict):
-    cnt = 1
-    name = json_dict['filename']
-    names = os.listdir("photo")
-    for i in range(len(names)):
-        if name == names[i]:
-            cnt += 1
-            name = '.'.join(name.split('.')[:-1]) + '-%d.' % cnt + name.split('.')[-1]
+    for f_name in os.listdir('photo'):
+        if f_name == json_dict['filename']:
+            raise DuplicatedPhotoNameError("Photo named %s already exist!" % f_name)
+
+    photo = Photo(name=json_dict['name'], score=int(json_dict['score']), file_name=json_dict['filename'])
+    photo.save()
+
+
+def _handle_upload_photo(name, photo):
+    # cnt = 1
+    # name = json_dict['filename']
+    # names = os.listdir("photo")
+    # for i in range(len(names)):
+    #     if name == names[i]:
+    #         cnt += 1
+    #         name = '.'.join(name.split('.')[:-1]) + '-%d.' % cnt + name.split('.')[-1]
+
+    for f_name in os.listdir('photo'):
+        if f_name == name:
+            raise DuplicatedPhotoNameError("Photo named %s already exist!" % f_name)
 
     try:
         img = open(os.path.join("photo", name), 'wb')
-        img.write(json_dict['photo'])
+        img.write(photo)
         img.close()
     except:
-        name = "No file"
-        return False
-    else:
-        return True
-    finally:
-        photo = Photo(name=json_dict['name'], score=int(json_dict['score']), file_name=name)
-        photo.save()
+        raise StoreImgError("Can not store %r" % photo)

@@ -19,15 +19,17 @@ from django.contrib import admin
 from main import views
 
 urlpatterns = [
-    url(r'^upload', views.upload),
-
-    url(r'^upload/statistic', views.upload),
-    url(r'^get/statistic', views.upload),
+    url(r'^upload$', views.upload),
+    url(r'^upload/photo/(.+)', views.upload_photo),
+    url(r'^get/photo/(.+)', views.get_photo),
 
     url(r'^get/ranking$', views.get_ranking),
-    url(r'^get/photo/(.+)', views.get_photo),
     url(r'^delete/([0-9]+)', views.delete),
     url(r'^delete$', views.delete_all),
+
+    # url(r'^upload/statistic', views.upload),
+    # url(r'^get/statistic', views.upload),
+
     url(r'^admin/', admin.site.urls),
-    url(r'', views.hello),
+    url(r'', views.hello)
 ]
