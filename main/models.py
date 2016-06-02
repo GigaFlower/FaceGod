@@ -12,11 +12,8 @@ class PhotoStatistic(models.Model):
 
 class Photo(models.Model):
     name = models.CharField(max_length=100)
-    score = models.IntegerField()
+    score = models.CharField(max_length=20)
     file_name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return "%s : %d 分" % (self.name, self.score)
 
     def __le__(self, other):
         return self.score < other.score

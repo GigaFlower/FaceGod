@@ -134,7 +134,7 @@ def _handle_upload(json_dict):
         if f_name == json_dict['filename']:
             raise DuplicatedPhotoNameError("Photo named %s already exist!" % f_name)
 
-    photo = Photo(name=json_dict['name'], score=int(json_dict['score']), file_name=json_dict['filename'])
+    photo = Photo(name=json_dict['name'], score=json_dict['score'], file_name=json_dict['filename'])
     photo.save()
 
 
