@@ -11,9 +11,17 @@ class PhotoStatistic(models.Model):
 
 
 class Photo(models.Model):
-    name = models.CharField(max_length=100)
-    score = models.CharField(max_length=20)
-    file_name = models.CharField(max_length=100)
+    NONE = 0
+    WAITING = 1
+    MATCHED = 2
+
+    name = models.CharField(max_length=100, default="")
+    score = models.CharField(max_length=20, default="")
+    file_name = models.CharField(max_length=100, default="")
+
+    match_status = models.SmallIntegerField(default=0)  # 0 - None 1 - Waiting for match 2 - matched
+    match_key = models.CharField(max_length=10, default="")
+    match_file_name = models.CharField(max_length=100, default="")
 
     def __le__(self, other):
         return self.score < other.score
@@ -23,3 +31,16 @@ class Photo(models.Model):
 
     def serialize(self):
         return dict(id=self.id, name=self.name, score=self.score, filename=self.file_name)
+
+    def serialize_verbose(self):
+        if self.match_status == self.NONE:
+            m = "None"
+        elif self.match_status == self.WAITING:
+            m = "Waiting"
+        elif self.match_status == self.MATCHED:
+            m = "Matched"
+        else:
+            m = "Unknown"
+
+        return dict(id=self.id, name=self.name, score=self.score, filename=self.file_name,
+                    match_status=m, match_key=self.match_key, match_file_name=self.match_file_name)

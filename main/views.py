@@ -28,13 +28,13 @@ def upload(request):
 
     try:
         json_dict = _check_json(request.body.decode())
-        _handle_upload(json_dict)
+        id = _handle_upload(json_dict)
     except InvalidJsonError as e:
         return HttpResponse(str(e))
     except DuplicatedPhotoNameError as e:
         return HttpResponse(str(e))
     else:
-        return HttpResponse("upload success!")
+        return HttpResponse(id)
 
 
 def upload_photo(request, filename):
@@ -70,6 +70,12 @@ def get_ranking(request):
         return HttpResponse(json.dumps(ret, default=Photo.serialize), content_type="application/json")
     else:
         return HttpResponse("Use GET please!")
+
+
+def get_detail(request):
+    ret = Photo.objects.all()
+    ret = sorted(ret, key=lambda x: x.score, reverse=True)
+    return HttpResponse(json.dumps(ret, default=Photo.serialize_verbose), content_type="application/json")
 
 
 def get_photo(request, filename):
@@ -136,6 +142,7 @@ def _handle_upload(json_dict):
 
     photo = Photo(name=json_dict['name'], score=json_dict['score'], file_name=json_dict['filename'])
     photo.save()
+    return photo.id
 
 
 def _handle_upload_photo(name, photo):
@@ -157,3 +164,48 @@ def _handle_upload_photo(name, photo):
         img.close()
     except:
         raise StoreImgError("Can not store %r" % photo)
+
+
+def set_match(request, target_id, key):
+    try:
+        a = Photo.objects.get(id=target_id)
+    except MultipleObjectsReturned:
+        return HttpResponse("Error!!There are multiple photo with the id!Please contact Zhou Ben")
+    except ObjectDoesNotExist:
+        return HttpResponse("There are no photo with id %r" % target_id)
+
+    if a.match_status == Photo.MATCHED:
+        # receive match result
+        a.match_status = Photo.NONE
+        a.match_key = ""
+        return get_photo(request, a.match_file_name)
+
+    try:
+        b = Photo.objects.get(match_status=Photo.WAITING, match_key=key)
+    except ObjectDoesNotExist:
+        # not found
+        a.match_status = Photo.WAITING
+        a.match_key = key
+        a.save()
+        return HttpResponse("")
+    else:
+        # Find somebody matched
+        b.match_status = Photo.MATCHED
+        b.match_file_name = a.file_name
+        b.save()
+        return get_photo(request, b.file_name)
+
+
+def unset_match(request, target_id):
+    try:
+        a = Photo.objects.get(id=target_id)
+    except MultipleObjectsReturned:
+        return HttpResponse("Error!!There are multiple photo with the id!Please contact Zhou Ben")
+    except ObjectDoesNotExist:
+        return HttpResponse("There are no photo with id %r" % target_id)
+
+    a.match_status = Photo.NONE
+    a.match_key = ""
+    a.match_file_name = ""
+
+    return HttpResponse("Unmatch success!")

@@ -22,14 +22,18 @@ urlpatterns = [
     url(r'^upload$', views.upload),
     url(r'^upload/photo/(.+)', views.upload_photo),
     url(r'^get/photo/(.+)', views.get_photo),
-
-    url(r'^get/ranking$', views.get_ranking),
     url(r'^delete/([0-9]+)', views.delete),
     url(r'^delete$', views.delete_all),
+
+    url(r'^get/ranking$', views.get_ranking),
+    url(r'^get/detail$', views.get_detail),
 
     url(r'^upload/statistic', views.upload_sta),
     url(r'^get/statistic', views.get_sta),
     url(r'^delete/statistic', views.delete_sta),
+
+    url(r'^match/([0-9]+)/([0-9]+)', views.set_match),
+    url(r'^unmatch/([0-9]+)', views.unset_match),
 
     url(r'^admin/', admin.site.urls),
     url(r'', views.hello)
