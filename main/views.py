@@ -65,7 +65,7 @@ def upload_sta(request):
 
 def get_ranking(request):
     if request.method == "GET":
-        ret = Photo.objects.all()
+        ret = Photo.objects.exclude(name="_pvp")
         ret = sorted(ret, key=lambda x: x.score, reverse=True)
         return HttpResponse(json.dumps(ret, default=Photo.serialize), content_type="application/json")
     else:
@@ -178,7 +178,9 @@ def set_match(request, target_id, key):
         # receive match result
         a.match_status = Photo.NONE
         a.match_key = ""
-        return get_photo(request, a.match_file_name)
+        _matched = Photo.objects.get(id=a.matched_id)
+        return HttpResponse(json.dumps({"score": _matched.score, "file_name": _matched.file_name}),
+                            content_type="application/json")
 
     try:
         b = Photo.objects.get(match_status=Photo.WAITING, match_key=key)
@@ -191,9 +193,10 @@ def set_match(request, target_id, key):
     else:
         # Find somebody matched
         b.match_status = Photo.MATCHED
-        b.match_file_name = a.file_name
+        b.matched_id = a.id
         b.save()
-        return get_photo(request, b.file_name)
+        return HttpResponse(json.dumps({"score": b.score, "file_name": b.file_name}),
+                            content_type="application/json")
 
 
 def unset_match(request, target_id):

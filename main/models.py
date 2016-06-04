@@ -21,7 +21,7 @@ class Photo(models.Model):
 
     match_status = models.SmallIntegerField(default=0)  # 0 - None 1 - Waiting for match 2 - matched
     match_key = models.CharField(max_length=10, default="")
-    match_file_name = models.CharField(max_length=100, default="")
+    matched_id = models.CharField(max_length=100, default="")
 
     def __le__(self, other):
         return self.score < other.score
@@ -43,4 +43,4 @@ class Photo(models.Model):
             m = "Unknown"
 
         return dict(id=self.id, name=self.name, score=self.score, filename=self.file_name,
-                    match_status=m, match_key=self.match_key, match_file_name=self.match_file_name)
+                    match_status=m, match_key=self.match_key, match_id=self.matched_id)
