@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^get/statistic', views.get_sta),
     url(r'^delete/statistic', views.delete_sta),
 
-    url(r'^match/([0-9]+)/([0-9]+)', views.set_match),
+    url(r'^match/([0-9]+)/(.+)', views.set_match),
     url(r'^unmatch/([0-9]+)', views.unset_match),
 
     url(r'^admin/', admin.site.urls),

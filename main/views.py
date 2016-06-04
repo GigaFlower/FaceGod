@@ -210,5 +210,6 @@ def unset_match(request, target_id):
     a.match_status = Photo.NONE
     a.match_key = ""
     a.match_file_name = ""
+    a.save()
 
     return HttpResponse("Unmatch success!")
