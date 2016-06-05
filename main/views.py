@@ -184,6 +184,8 @@ def set_match(request, target_id, key):
 
     try:
         b = Photo.objects.get(match_status=Photo.WAITING, match_key=key)
+        if str(b.id) == target_id:
+            raise ObjectDoesNotExist
     except ObjectDoesNotExist:
         # not found
         a.match_status = Photo.WAITING
